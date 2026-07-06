@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Momoyo Stock Recap - Portal Laporan Rekap Stok</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Style Sheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <img src="momoyo_logo.jpg" alt="Momoyo Logo" class="brand-logo">
+        <div class="brand-text">
+          <h1>Momoyo Stock</h1>
+          <span>Recap & Inventory Portal</span>
+        </div>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav">
+        <button class="nav-item active" data-target="dashboard">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </button>
+        <button class="nav-item" data-target="form-section">
+          <i data-lucide="file-plus"></i> Input Rekap
+        </button>
+        <button class="nav-item" data-target="history">
+          <i data-lucide="history"></i> Riwayat Laporan
+        </button>
+        <button class="nav-item" data-target="analytics">
+          <i data-lucide="bar-chart-3"></i> Analisis Stok
+        </button>
+        <button class="nav-item" data-target="consolidated-recap">
+          <i data-lucide="layers"></i> Rekap Gabungan
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Dark/Light Switch -->
+        <button id="theme-toggle" class="theme-btn" title="Toggle Theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Bar -->
+    <nav class="mobile-nav">
+      <button class="mobile-nav-item active" data-target="dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dash</span>
+      </button>
+      <button class="mobile-nav-item" data-target="form-section">
+        <i data-lucide="file-plus"></i>
+        <span>Input</span>
+      </button>
+      <button class="mobile-nav-item" data-target="history">
+        <i data-lucide="history"></i>
+        <span>Riwayat</span>
+      </button>
+      <button class="mobile-nav-item" data-target="analytics">
+        <i data-lucide="bar-chart-3"></i>
+        <span>Analisis</span>
+      </button>
+      <button class="mobile-nav-item" data-target="consolidated-recap">
+        <i data-lucide="layers"></i>
+        <span>Gabungan</span>
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+
+      <!-- ================= DASHBOARD VIEW ================= -->
+      <section id="dashboard" class="content-view active">
+        <div class="view-header">
+          <div>
+            <h2>Dashboard Ringkasan</h2>
+            <p>Selamat datang di Portal Rekap Stok Momoyo. Kelola dan pantau stok dengan mudah.</p>
+          </div>
+          <button class="btn btn-primary" onclick="switchView('form-section')">
+            <i data-lucide="plus"></i> Buat Rekap Baru
+          </button>
+        </div>
+
+        <!-- Dashboard Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-red">
+              <i data-lucide="clipboard-list"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Laporan</h3>
+              <span id="stat-total-recaps" class="stat-value">0</span>
+              <p class="stat-desc">Laporan yang tersimpan</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-yellow">
+              <i data-lucide="store"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Toko Teraktif</h3>
+              <span id="stat-active-store" class="stat-value">-</span>
+              <p class="stat-desc">Pengisian terbanyak</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-blue">
+              <i data-lucide="calendar"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Rekap Terakhir</h3>
+              <span id="stat-last-recap-date" class="stat-value">-</span>
+              <p id="stat-last-recap-store" class="stat-desc">Belum ada data masuk</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-green">
+              <i data-lucide="package-check"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Item Terpantau</h3>
+              <span class="stat-value">73</span>
+              <p class="stat-desc">Jenis bahan & kemasan</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Sub-Content Grid -->
+        <div class="dashboard-grid">
+          
+          <!-- Recent Activity Card -->
+          <div class="card recent-activity-card">
+            <div class="card-header">
+              <h3>Aktivitas Rekap Terbaru</h3>
+              <button class="btn-text" onclick="switchView('history')">Lihat Semua</button>
+            </div>
+            <div class="card-body">
+              <div id="recent-activity-list" class="activity-list">
+                <!-- Will be populated dynamically -->
+                <div class="empty-state">
+                  <i data-lucide="inbox"></i>
+                  <p>Belum ada data rekap stok yang dimasukkan.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Store Stock Quick Overview Card -->
+          <div class="card store-overview-card">
+            <div class="card-header">
+              <h3>Daftar Toko Momoyo</h3>
+              <span class="badge">4 Toko</span>
+            </div>
+            <div class="card-body">
+              <div class="store-list">
+                <div class="store-list-item">
+                  <div class="store-details">
+                    <span class="store-number">1</span>
+                    <div>
+                      <h4 class="store-title">Momoyo Sukalarang</h4>
+                      <p class="store-subtitle">Sukabumi</p>
+                    </div>
+                  </div>
+                  <span class="badge badge-store" id="badge-store-0">0 Rekap</span>
+                </div>
+                <div class="store-list-item">
+                  <div class="store-details">
+                    <span class="store-number">2</span>
+                    <div>
+                      <h4 class="store-title">Momoyo Mangun Jaya</h4>
+                      <p class="store-subtitle">Tambun Selatan, Bekasi</p>
+                    </div>
+                  </div>
+                  <span class="badge badge-store" id="badge-store-1">0 Rekap</span>
+                </div>
+                <div class="store-list-item">
+                  <div class="store-details">
+                    <span class="store-number">3</span>
+                    <div>
+                      <h4 class="store-title">Momoyo Dukuh Zamrud</h4>
+                      <p class="store-subtitle">Bekasi</p>
+                    </div>
+                  </div>
+                  <span class="badge badge-store" id="badge-store-2">0 Rekap</span>
+                </div>
+                <div class="store-list-item">
+                  <div class="store-details">
+                    <span class="store-number">4</span>
+                    <div>
+                      <h4 class="store-title">Momoyo Luwuk</h4>
+                      <p class="store-subtitle">Sulawesi</p>
+                    </div>
+                  </div>
+                  <span class="badge badge-store" id="badge-store-3">0 Rekap</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= INPUT REKAP SECTION ================= -->
+      <section id="form-section" class="content-view">
+        <div class="view-header">
+          <div>
+            <h2>Form Pengisian Rekap Stok</h2>
+            <p>Masukkan data stok barang terkini secara detail untuk dilaporkan.</p>
+          </div>
+          <div class="header-buttons">
+            <button class="btn btn-outline" onclick="loadDraft()">
+              <i data-lucide="refresh-cw"></i> Muat Draft
+            </button>
+            <button class="btn btn-outline-danger" onclick="clearForm()">
+              <i data-lucide="trash-2"></i> Reset Form
+            </button>
+          </div>
+        </div>
+
+        <form id="rekap-stok-form" onsubmit="handleFormSubmit(event)">
+          
+          <!-- Step 1: Info Utama Card -->
+          <div class="card form-card info-card">
+            <div class="card-header">
+              <h3><span class="step-num">1</span> Informasi Laporan</h3>
+              <span class="required-notice">* Wajib diisi</span>
+            </div>
+            <div class="card-body grid-3">
+              <div class="form-group">
+                <label for="input-tanggal">Tanggal Rekap <span class="required">*</span></label>
+                <div class="input-with-icon">
+                  <i data-lucide="calendar" class="input-icon"></i>
+                  <input type="date" id="input-tanggal" required>
+                </div>
+                <span class="form-help">Pilih tanggal dilakukannya rekap stok</span>
+              </div>
+              <div class="form-group">
+                <label for="input-toko">Cabang Toko <span class="required">*</span></label>
+                <div class="input-with-icon">
+                  <i data-lucide="store" class="input-icon"></i>
+                  <select id="input-toko" required>
+                    <option value="" disabled selected>-- Pilih Toko --</option>
+                    <!-- Options populated dynamically -->
+                  </select>
+                </div>
+                <span class="form-help">Pilih cabang toko Momoyo</span>
+              </div>
+              <div class="form-group">
+                <label for="input-crew">Nama Crew Pengisi <span class="required">*</span></label>
+                <div class="input-with-icon">
+                  <i data-lucide="user" class="input-icon"></i>
+                  <input type="text" id="input-crew" placeholder="Masukkan nama Anda..." required>
+                </div>
+                <span class="form-help">Nama crew yang bertanggung jawab merekap</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Stock Items Card with Tabs -->
+          <div class="card form-card items-card">
+            <div class="card-header items-header">
+              <div class="header-left">
+                <h3><span class="step-num">2</span> Data Stok Barang</h3>
+                <p>Isi jumlah fisik barang yang ada di toko dalam satuan yang tertera.</p>
+              </div>
+              <div class="search-bar">
+                <i data-lucide="search"></i>
+                <input type="text" id="item-search" placeholder="Cari barang (cth: Fructosa, Cup)..." oninput="filterItems()">
+              </div>
+            </div>
+            
+            <!-- Category Tab Headers -->
+            <div class="tabs-container">
+              <div class="tabs-scroll" id="category-tabs">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- Tab content -->
+            <div class="card-body tab-content-body">
+              <div id="items-grid" class="items-grid-layout">
+                <!-- Items inputs populated dynamically -->
+              </div>
+              <div id="no-search-results" class="empty-state hidden">
+                <i data-lucide="search-code"></i>
+                <p>Barang tidak ditemukan. Periksa kata kunci pencarian Anda.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Submit Actions -->
+          <div class="form-actions-bar">
+            <div class="draft-indicator" id="draft-status-msg">
+              <i data-lucide="check-circle-2"></i> Draft tersimpan otomatis
+            </div>
+            <div class="action-buttons">
+              <button type="button" class="btn btn-outline" onclick="saveDraftManual()">
+                <i data-lucide="save"></i> Simpan Draft
+              </button>
+              <button type="submit" class="btn btn-primary btn-large">
+                <i data-lucide="send"></i> Simpan & Kirim
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- ================= RIWAYAT SECTION ================= -->
+      <section id="history" class="content-view">
+        <div class="view-header">
+          <div>
+            <h2>Riwayat Laporan Rekap Stok</h2>
+            <p>Lihat, edit, cetak, atau kirim ulang rekap stok yang telah diinput sebelumnya.</p>
+          </div>
+          <div class="header-buttons">
+            <button class="btn btn-outline" onclick="exportAllToCSV()">
+              <i data-lucide="download"></i> Ekspor Semua (.CSV)
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header history-filters">
+            <div class="filter-group">
+              <label for="filter-store">Filter Toko</label>
+              <select id="filter-store" onchange="renderHistoryTable()">
+                <option value="all">Semua Toko</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="filter-group search-filter">
+              <label for="history-search">Cari Crew</label>
+              <div class="input-with-icon">
+                <i data-lucide="search"></i>
+                <input type="text" id="history-search" placeholder="Cari nama crew..." oninput="renderHistoryTable()">
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="data-table" id="history-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Nama Toko</th>
+                    <th>Nama Crew</th>
+                    <th>Total Item Terisi</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+            <div id="history-empty-state" class="empty-state p-5">
+              <i data-lucide="folder-open"></i>
+              <p>Belum ada data riwayat rekap stok.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ANALYTICS SECTION ================= -->
+      <section id="analytics" class="content-view">
+        <div class="view-header">
+          <div>
+            <h2>Analisis Tren Stok</h2>
+            <p>Pantau fluktuasi jumlah barang di setiap cabang dari waktu ke waktu.</p>
+          </div>
+        </div>
+
+        <div class="analytics-layout">
+          <!-- Left side controls -->
+          <div class="card controls-card">
+            <div class="card-header">
+              <h3>Konfigurasi Grafik</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="analytics-item-select">Pilih Barang</label>
+                <select id="analytics-item-select" onchange="renderAnalyticsCharts()">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="analytics-store-select">Pilih Toko</label>
+                <select id="analytics-store-select" onchange="renderAnalyticsCharts()">
+                  <option value="all">Semua Toko (Bandingan)</option>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Batas Minimum Stok Terpantau</label>
+                <input type="number" id="analytics-min-threshold" value="5" min="0" onchange="renderAnalyticsCharts()">
+                <span class="form-help">Memberi penanda jika stok fisik di bawah batas ini.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side graphs -->
+          <div class="chart-container-grid">
+            <div class="card chart-card">
+              <div class="card-header">
+                <h3>Tren Fluktuasi Stok Fisik</h3>
+                <span class="badge" id="chart-item-badge">-</span>
+              </div>
+              <div class="card-body chart-wrapper">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+            
+            <div class="card chart-card">
+              <div class="card-header">
+                <h3>Perbandingan Stok Antar Cabang</h3>
+                <span class="badge">Perbandingan Terkini</span>
+              </div>
+              <div class="card-body chart-wrapper">
+                <canvas id="compareChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= CONSOLIDATED RECAP SECTION ================= -->
+      <section id="consolidated-recap" class="content-view">
+        <div class="view-header">
+          <div>
+            <h2>Rekap Gabungan Antar Periode</h2>
+            <p>Gabungkan dan pantau laporan stok dari berbagai periode history dan cabang secara sekaligus.</p>
+          </div>
+          <div class="header-buttons">
+            <button class="btn btn-outline-success" onclick="exportConsolidatedMatrixToCSV()">
+              <i data-lucide="file-spreadsheet"></i> Ekspor Matriks (.CSV)
+            </button>
+          </div>
+        </div>
+
+        <div class="consolidated-layout">
+          <!-- Control Panel -->
+          <div class="card controls-card">
+            <div class="card-header">
+              <h3>Filter Konsolidasi</h3>
+            </div>
+            <div class="card-body grid-3">
+              <div class="form-group">
+                <label for="consolidated-start-date">Tanggal Mulai</label>
+                <div class="input-with-icon">
+                  <i data-lucide="calendar" class="input-icon"></i>
+                  <input type="date" id="consolidated-start-date" onchange="renderConsolidatedMatrix()">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="consolidated-end-date">Tanggal Selesai</label>
+                <div class="input-with-icon">
+                  <i data-lucide="calendar" class="input-icon"></i>
+                  <input type="date" id="consolidated-end-date" onchange="renderConsolidatedMatrix()">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="consolidated-store-select">Pilih Cabang Toko</label>
+                <div class="input-with-icon">
+                  <i data-lucide="store" class="input-icon"></i>
+                  <select id="consolidated-store-select" onchange="renderConsolidatedMatrix()">
+                    <option value="all">Semua Cabang Toko</option>
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-body pt-0 flex-row-controls">
+              <div class="form-group search-filter-consolidated">
+                <label for="consolidated-item-search">Cari Nama Barang</label>
+                <div class="input-with-icon">
+                  <i data-lucide="search" class="input-icon"></i>
+                  <input type="text" id="consolidated-item-search" placeholder="Cari barang (cth: Fructosa)..." oninput="renderConsolidatedMatrix()">
+                </div>
+              </div>
+              <div class="form-group mode-filter-consolidated">
+                <label for="consolidated-display-mode">Tipe Tampilan</label>
+                <select id="consolidated-display-mode" onchange="renderConsolidatedMatrix()">
+                  <option value="matrix">Matriks Harian (Per Tanggal)</option>
+                  <option value="summary">Akumulasi Total & Rata-rata</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Output Table Container -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Tabel Hasil Konsolidasi Stok</h3>
+              <div class="badge" id="consolidated-badge-count">0 Laporan Tergabung</div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="data-table consolidated-table" id="consolidated-table">
+                  <thead id="consolidated-table-head">
+                    <!-- Dynamic Headers based on selected dates -->
+                  </thead>
+                  <tbody id="consolidated-table-body">
+                    <!-- Dynamic rows showing 73 items and their quantities over time -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="consolidated-empty-state" class="empty-state p-5">
+                <i data-lucide="calendar-range"></i>
+                <p>Tidak ada data rekap stok pada periode atau cabang yang dipilih.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= DETAILS MODAL ================= -->
+  <div id="details-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-title">Rincian Rekap Stok</h3>
+          <p id="modal-subtitle">Toko - Tanggal - Oleh Crew</p>
+        </div>
+        <button class="modal-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Action Buttons inside Modal -->
+        <div class="modal-action-banner">
+          <div class="action-banner-text">
+            <h4>Google Form Rekap</h4>
+            <p>Data siap dikirimkan ke Google Forms untuk sinkronisasi.</p>
+          </div>
+          <button id="modal-btn-google-form" class="btn btn-primary">
+            <i data-lucide="external-link"></i> Kirim ke Google Form
+          </button>
+        </div>
+
+        <div class="details-search">
+          <div class="input-with-icon">
+            <i data-lucide="search"></i>
+            <input type="text" id="modal-item-search" placeholder="Cari barang dalam rincian..." oninput="filterModalDetails()">
+          </div>
+          <div class="checkbox-filter">
+            <label>
+              <input type="checkbox" id="modal-filter-filled" onchange="filterModalDetails()"> Tampilkan hanya yang terisi (> 0)
+            </label>
+          </div>
+        </div>
+
+        <div class="details-grid-container">
+          <table class="modal-details-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Kategori</th>
+                <th class="text-center">Jumlah Stok Fisik</th>
+              </tr>
+            </thead>
+            <tbody id="modal-details-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal()">Tutup</button>
+        <button id="modal-btn-export-csv" class="btn btn-outline-success">
+          <i data-lucide="file-spreadsheet"></i> Unduh CSV Laporan ini
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SUBMIT SUCCESS DIALOG ================= -->
+  <div id="success-modal" class="modal-overlay">
+    <div class="success-card">
+      <div class="success-icon-wrapper">
+        <i data-lucide="check" class="success-icon"></i>
+      </div>
+      <h2>Rekap Stok Berhasil Disimpan!</h2>
+      <p>Data rekap telah berhasil disimpan dalam riwayat lokal browser ini.</p>
+      
+      <div class="google-form-box">
+        <p class="box-desc"><strong>Langkah Penting:</strong> Untuk melengkapi pelaporan ke manajemen pusat, Anda harus mengirimkan data ini ke formulir Google Forms resmi.</p>
+        <a id="success-google-link" href="#" target="_blank" class="btn btn-google btn-large">
+          <i data-lucide="send"></i> Kirim Data ke Google Form Sekarang
+        </a>
+        <p class="link-notice">* Semua 73 field akan otomatis terisi secara ajaib! Anda cukup klik tombol <strong>Kirim</strong> di halaman Google Form yang terbuka.</p>
+      </div>
+
+      <div class="success-actions">
+        <button class="btn btn-outline" onclick="closeSuccessModal()">Tutup & Lihat Riwayat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="fields.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
